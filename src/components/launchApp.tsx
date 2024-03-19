@@ -10,7 +10,6 @@ export const LaunchApp = () => {
   const updateAbi = (s: string) => {
     setAbi(s);
   };
-  console.log("value: " +value);
 
   return (
     <div className="flex flex-row">

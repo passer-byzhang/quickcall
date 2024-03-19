@@ -1,8 +1,9 @@
 import { ethers } from "ethers";
+import { Result } from "./result";
 
 import { useState } from "react";
 import { Fragment } from "@ethersproject/abi";
-import {Button} from 'antd'
+import {Button,Input} from 'antd'
 
 interface CallProps {
   contractAddress: string;
@@ -10,11 +11,12 @@ interface CallProps {
 }
 
 export function CallContract({ contractAddress, fragment }: CallProps) {
-  //const chainId = useChainId();
+
   const [inputValues, setInputValues] = useState<string[]>(
     new Array(fragment.inputs.length).fill("")
   );
   const [showInputs, setShowInputs] = useState(false);
+  const [result, setResult] = useState<string>("");
 
   const toggleInputs = () => {
     setShowInputs(!showInputs);
@@ -23,17 +25,18 @@ export function CallContract({ contractAddress, fragment }: CallProps) {
   const provider = new ethers.BrowserProvider(window.ethereum);
 
   async function readContract() {
-    const abi = [JSON.stringify(fragment)];
+    setResult("");
+    const abi = [fragment];
     const address = contractAddress;
     const args = inputValues;
     const contract = new ethers.Contract(address, abi, provider);
-    const result = await contract
+    await contract
       .getFunction(fragment.name)
-      .call(null, ...args);
-    return result;
-  }
+      .call(null, ...args).then((res) => {
+        setResult(res.toString());
+    });
 
-  //inputArea for every inpiut value
+  }
 
   return (
     <div>
@@ -49,10 +52,10 @@ export function CallContract({ contractAddress, fragment }: CallProps) {
             <div>
               {fragment.inputs.map((input, index) => {
                 return (
-                  <input
+                  <Input
                     key={index}
+                    placeholder={`${input.name}:${input.type}`}
                     type={input.type}
-                    value={inputValues[index]}
                     onChange={(e) => {
                       const newInputValues = inputValues;
                       newInputValues[index] = e.target.value;
@@ -62,6 +65,7 @@ export function CallContract({ contractAddress, fragment }: CallProps) {
                 );
               })}
             </div>
+            {result!="" && <Result msg={result} />}
             <Button
               onClick={() => readContract()}
               style={{ backgroundColor: "blue", color: "white" }}

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Fragment, FunctionFragment } from "@ethersproject/abi";
 import { useWriteContract } from "wagmi";
 import { Button } from "antd";
+import { Input } from "antd";
 type Props = {
   contractAddress: string;
   fragment: Fragment;
@@ -42,17 +43,17 @@ export function ExecuteContract({ contractAddress, fragment, value }: Props) {
       >
         {fragment.name}
       </Button>
-      {hash && <div>Transaction Hash: {hash}</div>}
       <div>
         {showInputs && (
           <div>
             <div>
               {fragment.inputs.map((input, index) => {
+                console.log(input.type);
                 return (
-                  <input
+                  <Input
                     key={index}
+                    placeholder={`${input.name}:${input.type}`}
                     type={input.type}
-                    value={inputValues[index]}
                     onChange={(e) => {
                       const newInputValues = inputValues;
                       newInputValues[index] = e.target.value;
