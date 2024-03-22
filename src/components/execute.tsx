@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Fragment, FunctionFragment } from "@ethersproject/abi";
 import { useWriteContract } from "wagmi";
-import { Button } from "antd";
 import { Input } from "antd";
+import { CustomButton } from "./Button";
 type Props = {
   contractAddress: string;
   fragment: Fragment;
@@ -20,9 +20,16 @@ export function ExecuteContract({ contractAddress, fragment, value }: Props) {
   const toggleInputs = () => {
     setShowInputs(!showInputs);
   };
+  function isPayable() {
+    if ((fragment as FunctionFragment).stateMutability == "nonpayable") {
+        return false;
+      }else{
+        return true;
+      }
+  }
   //contractAddress = "0x32ae93f08219baf7fdeb8ed99c6a0704c4aee549";
   //inputArea for every inpiut value
-  if ((fragment as FunctionFragment).stateMutability == "nonpayable") {
+  if (isPayable()) {
     value = BigInt(0);
   }
   async function send() {
@@ -37,12 +44,20 @@ export function ExecuteContract({ contractAddress, fragment, value }: Props) {
 
   return (
     <div>
-      <Button
-        onClick={toggleInputs}
-        style={{ backgroundColor: "red", color: "white" }}
-      >
-        {fragment.name}
-      </Button>
+
+      <CustomButton
+        onClick={
+          () => {
+            if (fragment.inputs.length == 0) {
+              send();
+            } else {
+              toggleInputs();
+            }
+          }
+        }
+        msg={fragment.name}
+        type={isPayable()?"payable":"nonpayable"}
+      />
       <div>
         {showInputs && (
           <div>
@@ -59,16 +74,16 @@ export function ExecuteContract({ contractAddress, fragment, value }: Props) {
                       newInputValues[index] = e.target.value;
                       setInputValues(newInputValues);
                     }}
+                    className="mb-2 rounded-none"
                   />
                 );
               })}
             </div>
-            <Button
+            <CustomButton
               onClick={() => send()}
-              style={{ backgroundColor: "red", color: "white" }}
-            >
-              send
-            </Button>
+              msg="send"
+              type={isPayable()?"payable":"nonpayable"}
+            />
           </div>
         )}
       </div>

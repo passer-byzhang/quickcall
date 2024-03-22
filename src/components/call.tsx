@@ -3,7 +3,8 @@ import { Result } from "./result";
 
 import { useState } from "react";
 import { Fragment } from "@ethersproject/abi";
-import {Button,Input} from 'antd'
+import {  Input } from "antd";
+import { CustomButton } from "./Button";
 
 interface CallProps {
   contractAddress: string;
@@ -11,7 +12,6 @@ interface CallProps {
 }
 
 export function CallContract({ contractAddress, fragment }: CallProps) {
-
   const [inputValues, setInputValues] = useState<string[]>(
     new Array(fragment.inputs.length).fill("")
   );
@@ -32,20 +32,27 @@ export function CallContract({ contractAddress, fragment }: CallProps) {
     const contract = new ethers.Contract(address, abi, provider);
     await contract
       .getFunction(fragment.name)
-      .call(null, ...args).then((res) => {
-        setResult(res.toString());
-    });
-
+      .call(null, ...args)
+      .then((res) => {
+        console.log(res.toString());
+        setResult(
+            res.toString());
+      });
   }
 
   return (
     <div>
-      <Button
-        onClick={toggleInputs}
-        style={{ backgroundColor: "blue", color: "white" }}
-      >
-        {fragment.name}
-      </Button>
+      <CustomButton
+        onClick={() => {
+          if (fragment.inputs.length == 0) {
+            readContract();
+          } else {
+            toggleInputs();
+          }
+        }}
+        msg = {fragment.name}
+        type="call"
+      />
       <div>
         {showInputs && (
           <div>
@@ -65,16 +72,12 @@ export function CallContract({ contractAddress, fragment }: CallProps) {
                 );
               })}
             </div>
-            {result!="" && <Result msg={result} />}
-            <Button
-              onClick={() => readContract()}
-              style={{ backgroundColor: "blue", color: "white" }}
-            >
-              call
-            </Button>
+            {result != "" && <Result msg={result} />}
+            <CustomButton onClick={() => readContract()} msg="call" type="call"/>
           </div>
         )}
       </div>
+      {result != "" && <Result msg={result} />}
     </div>
   );
 }
