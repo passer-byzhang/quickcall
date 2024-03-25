@@ -1,6 +1,6 @@
 import {WalletOptions} from './wallet-options'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faGithub } from '@fortawesome/free-brands-svg-icons'
+import { faGithub,faTelegram } from '@fortawesome/free-brands-svg-icons'
 const Header = () => {
   return (
     <header className="flex justify-between items-center py-4 px-6 bg-white">
@@ -10,6 +10,9 @@ const Header = () => {
       </div>
       <a href="https://github.com/passer-byzhang/quickcall" target="_blank" rel="noopener noreferrer" className='ml-2'>
         <FontAwesomeIcon icon={faGithub} />
+      </a>
+      <a href="https://t.me/AlvanZhang" target="_blank" rel="noopener noreferrer" className='ml-2'>
+        <FontAwesomeIcon icon={faTelegram} />
       </a>
       </div>  
 

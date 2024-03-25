@@ -37,10 +37,13 @@ export function WalletOptions() {
       </div>
     );
   } else {
-    return connectors.map((connector) => (
-      <Button key={connector.uid} onClick={() => connect({ connector })}>
-        {connector.name}
+    const firstConnector = connectors[0];
+    return (
+        <Button key={firstConnector.uid} onClick={() => connect({ connector:firstConnector })}>
+            Connect
       </Button>
-    ));
+    );
+
+    
   }
 }

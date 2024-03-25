@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { Result } from "./result";
+import { Result ,Error} from "./result";
 
 import { useState } from "react";
 import { Fragment } from "@ethersproject/abi";
@@ -17,6 +17,7 @@ export function CallContract({ contractAddress, fragment }: CallProps) {
   );
   const [showInputs, setShowInputs] = useState(false);
   const [result, setResult] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
   const toggleInputs = () => {
     setShowInputs(!showInputs);
@@ -26,6 +27,7 @@ export function CallContract({ contractAddress, fragment }: CallProps) {
 
   async function readContract() {
     setResult("");
+    setError("");
     const abi = [fragment];
     const address = contractAddress;
     const args = inputValues;
@@ -34,9 +36,10 @@ export function CallContract({ contractAddress, fragment }: CallProps) {
       .getFunction(fragment.name)
       .call(null, ...args)
       .then((res) => {
-        console.log(res.toString());
         setResult(
             res.toString());
+      }).catch((e) => {
+        setError(e.message);
       });
   }
 
@@ -78,6 +81,7 @@ export function CallContract({ contractAddress, fragment }: CallProps) {
         )}
       </div>
       {result != "" && <Result msg={result} />}
+      {error != "" && <Error msg={error} />}
     </div>
   );
 }
